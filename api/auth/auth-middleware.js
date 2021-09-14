@@ -39,7 +39,7 @@ const restricted = (req, res, next) => {
 
 const only = (role_name) => (req, res, next) => {
   const { decodedJwt } = req
-  if (decodedJwt.role === role_name) {
+  if (decodedJwt.role_name === role_name) {
     next()
   } else {
     next({
@@ -59,17 +59,13 @@ const only = (role_name) => (req, res, next) => {
   */
 }
 const checkUsernameExists = async (req, res, next) => {
-  const { username } = req.body
   try {
-    const user = await User.findBy({ username })
-    if (user.length) {
+    const [user] = await User.findBy({ username: req.body.username })
+    if (!user) {
+      next({ status: 401, message: 'Invalid credentials' })
+    } else {
       req.user = user
       next()
-    } else {
-      next({
-        status: 401,
-        message: 'Invalid credentials',
-      })
     }
   } catch (err) {
     next(err)

@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const { checkUsernameExists, validateRoleName } = require('./auth-middleware')
-const { JWT_SECRET } = require('../secrets') // use this secret!
+// const { JWT_SECRET } = require('../secrets') // use this secret!
 const bcrypt = require('bcryptjs')
 
 const Users = require('../users/users-model')
@@ -40,6 +40,8 @@ router.post('/login', checkUsernameExists, (req, res, next) => {
         message: `${user.username} is back!`,
         token,
       })
+    } else {
+      next({ status: 401, message: 'Invalid credentials' })
     }
   })
   /**
