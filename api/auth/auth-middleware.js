@@ -63,7 +63,7 @@ const checkUsernameExists = async (req, res, next) => {
   try {
     const user = await User.findBy({ username })
     if (user.length) {
-      req.user = user[0]
+      req.user = user
       next()
     } else {
       next({
@@ -84,8 +84,12 @@ const checkUsernameExists = async (req, res, next) => {
 }
 
 const validateRoleName = (req, res, next) => {
-  const { role_name } = req.body
-  if (!role_name || role_name.trim()) {
+  let { role_name } = req.body
+  // const role_name = req.body.role_name.trim()
+  if (role_name) {
+    role_name = req.body.role_name.trim()
+  }
+  if (!role_name) {
     req.role_name = 'student'
     next()
   } else if (role_name.trim() === 'admin') {
@@ -96,7 +100,7 @@ const validateRoleName = (req, res, next) => {
       message: 'Role name can not be longer than 32 chars',
     })
   } else {
-    req.role_name = req.body.role_name.trim()
+    req.role_name = role_name
     next()
   }
 
